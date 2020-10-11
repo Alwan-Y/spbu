@@ -32,7 +32,7 @@ class Person {
     }
 
     greeting = () => {
-        console.log(`Holla my name is ${this.name}`)
+        console.log(`Holla my name is ${this.name}, I am the owner of this gas station`)
     }
 }
 
@@ -87,10 +87,14 @@ class Employee extends Person {
         return this.CASH;
     }
 
+    greeting = () => {
+        console.log(`Holla my name is ${this.name}, I am the employee of this gas station`)
+    }
+
     refuel = (customer, fuel, station) => {
         if (this.getEmployee()) {
             if (station.getShelter() > fuel) {
-                if (customer.getTankCapacity() > fuel) {
+                if (customer.getTankCapacity() > fuel + customer.getTankFilled()) {
                     let amountTemp = fuel * 10000;
                     let amount = amountTemp;
                     customer.SetTankFilled(fuel)
@@ -103,26 +107,31 @@ class Employee extends Person {
                             let totalAmount = amount - totalDisc
                             this.setCash(totalAmount);
                             this.setTransactionList(customer.getName(), fuel, station.getName(), totalAmount)
+                            console.log(`the transaction was successfully carried out by an officer named ${this.getName()}`)
                             console.log(`Your total transaction is ${amount}, you get 10% discount because you are already a member, your total payment is ${totalAmount}`)
                         } else if (amount >= 20000 && amount < 100000) {
                             let totalDisc = 0.1 * amount;
                             let totalAmount = amount - totalDisc
                             this.setCash(totalAmount);
                             this.setTransactionList(customer.getName(), fuel, station.getName(), totalAmount)
+                            console.log(`the transaction was successfully carried out by an officer named ${this.getName()}`)
                             console.log(`Your total transaction is ${amount}, you get 2,5% discount because you are already a member, your total payment is ${totalAmount}`)
                         } else {
                             this.setCash(amount);
                             this.setTransactionList(customer.getName(), fuel, station.getName(), amount)
+                            console.log(`the transaction was successfully carried out by an officer named ${this.getName()}`)
                             console.log(`Your total transaction is ${amount}, you are already a member, your total payment is ${amount}`)
                         }
                     } else if (customer.getPurchaseTimes() == 3) {
                         customer.setMember(true);
                         this.setCash(amount);
                         this.setTransactionList(customer.getName(), fuel, station.getName(), amount)
+                        console.log(`the transaction was successfully carried out by an officer named ${this.getName()}`)
                         console.log(`Your total transaction is ${amount}, your total payment is ${amount} \n you are now a member, starting the next purchase you are entitled to a discount`)
                     } else {
                         this.setCash(amount)
                         this.setTransactionList(customer.getName(), fuel, station.getName(), amount)
+                        console.log(`the transaction was successfully carried out by an officer named ${this.getName()}`)
                         console.log(`Your total transaction is ${amount}, your total payment is ${amount}`)
                     }
                 } else {
@@ -176,7 +185,16 @@ class Customer extends Person {
     }
 }
 
-const station = new Station('station 1')
+const station = new Station('StationOne')
 const jono = new Owner('Jono');
 const alex = new Employee('Alex');
 const boni = new Customer('Boni', 20)
+
+console.log(`=================================================================================`);
+jono.greeting();
+jono.setEmployeeIn(alex);
+console.log(`=================================================================================`);
+alex.greeting()
+alex.refuel(boni, 10, station)
+console.log(`=================================================================================`);
+alex.refuel(boni, 10, station)
