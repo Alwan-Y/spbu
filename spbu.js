@@ -36,7 +36,7 @@ class Person {
     }
 }
 
-class Owner extends person {
+class Owner extends Person {
     constructor(name) {
         super(name)
         this.employeeList = [];
@@ -61,7 +61,7 @@ class Owner extends person {
     }
 }
 
-class Employee extends person {
+class Employee extends Person {
     constructor(name) {
         super(name)
         this.employee = false;
@@ -70,7 +70,11 @@ class Employee extends person {
         // this.nameListTransaction = [];
     }
     setEmployee = boole => this.employeeList = boole;
-    setTransactionList = transaction => this.transactionList.push(transaction);
+    setTransactionList = (customer, fuel, station) => this.transactionList.push({
+        name: customer,
+        fuel: fuel,
+        station: station
+    });
     setCash = cash => this.CASH += cash;
 
     getEmployee = () => {
@@ -91,28 +95,34 @@ class Employee extends person {
                     let amount = amountTemp;
                     customer.SetTankFilled(fuel)
                     customer.setPurchaseTime()
-                    this.setTransactionList(customer.getName())
                     station.setShelter(-fuel)
                     station.chargingWarning()
                     if (customer.getMember()) {
                         if (amount >= 100000) {
-                            let totalAmount = 0.1 * amount;
+                            let totalDisc = 0.1 * amount;
+                            let totalAmount = amount - totalDisc
                             this.setCash(totalAmount);
+                            this.setTransactionList(customer.getName(), fuel, station.getName(), totalAmount)
                             console.log(`Your total transaction is ${amount}, you get 10% discount because you are already a member, your total payment is ${totalAmount}`)
                         } else if (amount >= 20000 && amount < 100000) {
-                            let totalAmount = 0.025 * amount;
+                            let totalDisc = 0.1 * amount;
+                            let totalAmount = amount - totalDisc
                             this.setCash(totalAmount);
+                            this.setTransactionList(customer.getName(), fuel, station.getName(), totalAmount)
                             console.log(`Your total transaction is ${amount}, you get 2,5% discount because you are already a member, your total payment is ${totalAmount}`)
                         } else {
                             this.setCash(amount);
+                            this.setTransactionList(customer.getName(), fuel, station.getName(), amount)
                             console.log(`Your total transaction is ${amount}, you are already a member, your total payment is ${amount}`)
                         }
                     } else if (customer.getPurchaseTimes() == 3) {
                         customer.setMember(true);
                         this.setCash(amount);
-                        console.log(`Your total transaction is ${amount}, your total payment is ${amount}`)
+                        this.setTransactionList(customer.getName(), fuel, station.getName(), amount)
+                        console.log(`Your total transaction is ${amount}, your total payment is ${amount} \n you are now a member, starting the next purchase you are entitled to a discount`)
                     } else {
                         this.setCash(amount)
+                        this.setTransactionList(customer.getName(), fuel, station.getName(), amount)
                         console.log(`Your total transaction is ${amount}, your total payment is ${amount}`)
                     }
                 } else {
@@ -133,17 +143,14 @@ class Customer extends Person {
         this.member = false;
         this.PURCHASE_TIMES = 0
         this.tankCapacity = tankCapacity;
-        this.tankFilled = 1; // karena gamungkin pas ngisi itu kosong
+        this.TANK = 1; // karena gamungkin pas ngisi itu kosong
     }
     setMember = member => this.member = member;
     setPurchaseTime = () => this.PURCHASE_TIMES++;
     setTankCapacity = capacity => this.tankCapacity = capacity;
-    SetTankFilled = capacity => this.SetTankFilled += capacity
+    SetTankFilled = capacity => this.TANK += capacity
 
-    getName = () => {
-        return this.getName;
-    }
-    getMembber = () => {
+    getMember = () => {
         return this.member;
     }
     getPurchaseTimes = () => {
@@ -153,16 +160,16 @@ class Customer extends Person {
         return this.tankCapacity;
     }
     getTankFilled = () => {
-        return this.tankFilled;
+        return this.TANK;
     }
 
     getTotalFuelSpent = (distance) => {
         const DISTANCE_PER_LITER = 10 // Asumsi 10Km membutuhkan 1 liter
         let TOTAL_FUEL_WILL_USED = distance / DISTANCE_PER_LITER;
         this.SetTankFilled(-TOTAL_FUEL_WILL_USED)
-        console.log(`the fuel used for ${distance} is ${TOTAL_FUEL_WILL_USED}, your remaining fuel ${this.getTankFilled()} liter`)
+        console.log(`the fuel used for ${distance}KM is ${TOTAL_FUEL_WILL_USED} Liter, your remaining fuel ${this.getTankFilled()} liter`)
         if (this.getTankFilled() > 1) {
-            console.log(`you still have a lot of fuel`)
+            console.log(`you still have a lo                                                                                                                                                           t of fuel`)
         } else {
             console.log(`Your remaining 1 liter of fuel is less, please refill it at the nearest fueling station`)
         }
@@ -172,4 +179,4 @@ class Customer extends Person {
 const station = new Station('station 1')
 const jono = new Owner('Jono');
 const alex = new Employee('Alex');
-const boni = new Customer('Boni')
+const boni = new Customer('Boni', 20)
